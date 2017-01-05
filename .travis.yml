@@ -10,6 +10,7 @@ mysql:
   
 before_install: 
   - composer self-update
+  - phpenv config-add tavis-config.ini
   
 install: 
   # add composer's global bin directory to the path
