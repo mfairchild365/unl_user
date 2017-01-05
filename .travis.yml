@@ -52,7 +52,7 @@ install:
   
   # force a symlink to our testing module (because it might already be included in unlcms2
   - ln -sf $TRAVIS_BUILD_DIR $root_dir/unlcms2/modules/unl_user
-  - drush pm-enable unl_user
+  - drush pm-enable unl_user --yes
   
   # start a web server on port 8080, run in the background; wait for initialization
   - drush runserver 127.0.0.1:8080 &
