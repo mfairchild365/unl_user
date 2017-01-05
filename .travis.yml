@@ -44,11 +44,8 @@ install:
   - mkdir sites/default/files
   - echo "\$config_directories = [CONFIG_SYNC_DIRECTORY => 'config/sync'];" >> sites/default/settings.php
   
-  # make sure we have all of the dependencies
-  - composer update drupal/core --with-dependencies
-  
   # Install drupal default profile
-  - drush --verbose core-quick-drupal --profile="Configuration installer" --use-existing --no-server --db-url=mysql://root:@127.0.0.1/drupal --yes
+  - drush --verbose core-quick-drupal --profile="config_installer" --use-existing --no-server --db-url=mysql://root:@127.0.0.1/drupal --yes
   
   # Import config for our pseudo install
   - drush --verbose config-import --yes
