@@ -1,0 +1,61 @@
+language: php
+
+php:
+  - 7.0
+  
+mysql: 
+  database: drupal 
+  username: root 
+  encoding: utf8
+  
+before_install: 
+  - sudo apt-get update & /dev/null 
+  - composer self-update
+  
+install: 
+  # add composer's global bin directory to the path
+  # see: https://github.com/drush-ops/drush#install---composer
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+
+  # Install Drush
+  - composer global require drush/drush:dev-master
+  - phpenv rehash
+  
+  # Create MySQL Database
+  - mysql -e 'create database drupal;'
+  
+  # navigate out of module directory to prevent blown stack by recursive module lookup
+  - cd ../
+  
+  # install unlcms2 and link our new module
+  - root_dir=$(pwd)
+  - git clone https://github.com/unlcms/UNL-CMS-2.git $root_dir/unlcms2
+  
+  # change the working directory to the unlcms2 root
+  - cd $root_dir/unlcms2
+  
+  # Run composer install
+  - composer install
+  
+  # Do the unlcms2 install
+  - cp .htaccess.drupal-default .htaccess
+  - cp sites/default/default.settings.php sites/default/settings.php
+  - mkdir sites/default/files
+  - echo "$config_directories = [CONFIG_SYNC_DIRECTORY => 'config/sync'];" >> sites/default/settings.php
+  
+  # Install drupal default profile
+  - drush --verbose site-install --db-url=mysql://root:@127.0.0.1/drupal --yes
+  
+  # Import config for our pseudo install
+  - drush --verbose config-import --yes
+  
+  # force a symlink to our testing module (because it might already be included in unlcms2
+  - ln -sf $TRAVIS_BUILD_DIR $root_dir/unlcms2/modules/unl_user
+  - drush pm-enable unl_user
+  
+  # start a web server on port 8080, run in the background; wait for initialization
+  - drush runserver 127.0.0.1:8080 &
+  - until netstat -an 2>/dev/null | grep '8080.*LISTEN'; do true; done
+  
+script: php scripts/test-run.sh --module unl_user --uri=http://127.0.0.1:8080
+  
