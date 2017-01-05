@@ -1,5 +1,5 @@
 language: php
-
+sudo: false
 php:
   - 7.0
   
@@ -10,8 +10,8 @@ mysql:
   
 before_install: 
   - composer self-update
-  - pecl install ldap
-  #- phpenv config-add tavis-config.ini
+  #- pecl install ldap
+  - phpenv config-add tavis-config.ini
   
 install: 
   # add composer's global bin directory to the path
