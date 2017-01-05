@@ -11,7 +11,7 @@ mysql:
 before_install: 
   - composer self-update
   #- pecl install ldap
-  - phpenv config-add tavis-config.ini
+  - phpenv config-add travis-config.ini
   
 install: 
   # add composer's global bin directory to the path
